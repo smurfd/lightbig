@@ -13,7 +13,6 @@ typedef long long unsigned int u64;
 #define DEC 10
 #define HEX 16
 #define MAXSTR 512
-#define BIGLEN 512
 #define LEN sizeof(i08)
 
 typedef struct {

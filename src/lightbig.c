@@ -35,8 +35,8 @@ void big_init_m(int len, ...) {
 //
 // Clear a bigint
 void big_end(big **a) {
-  if ((*a)->alloc_d) {free((*a)->dig); (*a)->alloc_d = false;}
-  if ((*a)->alloc_t) {free((*a)); (*a)->alloc_t = false;}
+  if ((*a)->alloc_d) {free((*a)->dig);} (*a)->alloc_d = false;
+  if ((*a)->alloc_t) {free((*a));} (*a)->alloc_t = false;
 }
 
 //
@@ -189,15 +189,11 @@ void big_copy(cb *a, big **c) {
 //
 // Copy data references
 void big_copy_ref(cb *a, big **b) {
-  char *bbb = malloc(MAXSTR);
-
   (*b)->len = (*a).len;
-  big_alloc_m(1, b);
   big_copy(a, b);
   (*b)->neg = (*a).neg;
   (*b)->len = (*a).len;
   (*b)->base = (*a).base;
-  big_end_str(bbb);
 }
 
 //
@@ -449,79 +445,66 @@ void big_sub(cb *a, cb *b, big **c) {
 //
 // Bigint division
 void big_div_sub(cb *a, cb *b, big **c) {
-  big *aa = NULL, *e = NULL, *bb = NULL, *co1 = NULL, *one = NULL;
-  big *co2 = NULL, *co4 = NULL;
+  big *aa = NULL, *bb = NULL, *co1 = NULL, *one = NULL, *co2 = NULL;
 
-  big_init_m(7, &aa, &e, &bb, &co1, &co2, &co4, &one);
+  big_init_m(5, &aa, &bb, &co1, &co2, &one);
   (*aa).len = (*a).len;
   (*bb).len = (*b).len;
-  (*e).len = (*a).len;
-  (*c)->len = (*a).len;
-  (*co1).len = 5;
+  (*co1).len = 2;
   (*one).len = 2;
-  (*co2).len = (*co1).len;
-  (*co4).len = (*co1).len;
-  big_alloc_max_m(3, &aa, &bb, &e);
-  big_alloc_m(4, &co1, &co2, &co4, &one);
+  (*co2).len = (*a).len;
+  big_alloc_max_m(3, &aa, &bb, &co2);
+  big_alloc_m(2, &co1, &one);
   big_copy(a, &aa);
   big_copy(b, &bb);
-  aa->len = a->len;
-  bb->len = b->len;
   big_set("1", &one);
   big_set("0", &co1);
 
-  while ((aa->len >= bb->len) && (e->neg == false && aa->neg == false)) {
-    char *aaa = malloc(MAXSTR);
-
-    big_sub(aa, bb, &e);
-    big_copy(e, &aa);
-    aa->neg = e->neg;
-    aa->len = e->len;
+  while ((aa->len >= bb->len) && (co2->neg == false && aa->neg == false)) {
+    big_sub(aa, bb, &co2);
+    big_copy_ref(co2, &aa);
+    (*aa).neg = (*co2).neg;
+    (*aa).len = (*co2).len;
     big_set("0", &co2);
 
     // co++
     big_add(co1, one, &co2);
-    big_get(co2, aaa);
-    big_set(aaa, &co1);
+    big_copy_ref(co2, &co1);
     big_set("0", &co2);
-
-    big_end_str(aaa);
   }
-  big_copy_ref(co1, &co4);
+  big_copy_ref(co1, &co2);
   // co--
-  if (aa->neg == true) {big_sub(co1, one, &co4);}
-  big_copy(co4, c);
-  big_init_m(3, &co2, &co4, &e);
-  big_end_m(7, &one, &co1, &bb, &aa, &co2, &co4, &e);
+  if (aa->neg == true) {big_sub(co1, one, &co2);}
+  big_copy(co2, c);
+  (*co2).alloc_t = true;
+  (*co2).alloc_d = false;
+  big_end_m(5, &one, &co1, &bb, &aa, &co2);
 }
 
 void big_div(cb *a, cb *b, big **c) {
-  big *aa = NULL, *bb = NULL, *cc = NULL, *cc1 = NULL, *aa1 = NULL, *cc2 = NULL;
+  big *aa = NULL, *bb = NULL, *cc = NULL, *cc1 = NULL, *aa1 = NULL, *cd = NULL;
   char *aaa = malloc(MAXSTR), *bbb = malloc(MAXSTR);
   int len_a, len_b, len_diff, cmp, cmp1;
 
-  big_init_m(6, &aa, &bb, &cc, &aa1, &cc1, &cc2);
+  big_init_m(6, &aa, &bb, &cc, &aa1, &cc1, &cd);
   (*aa).len = (*a).len;
   (*bb).len = (*a).len;
   (*aa1).len = (*a).len;
   (*cc).len = (*a).len;
   (*cc1).len = (*a).len;
-  (*c)->len = (*a).len;
-  big_alloc_m(6, &aa, &bb, &cc, &aa1, &cc1, &cc2);
+  (*cd).len = (*a).len;
+  big_alloc_m(6, &aa, &bb, &cc, &aa1, &cc1, &cd);
 
   // reset output parameter
   (*c)->neg = false;
-  (*c)->len = 1;
+  (*cd).neg = false;
+  (*cd).len = 1;
 
   // Create copy of a & b
   big_get(a, aaa);
   big_get(b, bbb);
-  (*aa).len = (*a).len;
-  (*bb).len = (*b).len;
   big_set(aaa, &aa);
   big_set(bbb, &bb);
-  (*aa).len = (*a).len;
-  (*bb).len = (*b).len;
 
   len_a = strlen(aaa);
   len_b = strlen(bbb);
@@ -557,17 +540,19 @@ void big_div(cb *a, cb *b, big **c) {
       }
       if ((*cc).len > 1) {
         for (int ii = 0; ii < (*cc).len; ii++) {
-          (*c)->dig[j + ii] = (*cc).dig[ii];
-          (*c)->len++;
+          (*cd).dig[j + ii] = (*cc).dig[ii];
+          (*cd).len++;
         }
-      } else {(*c)->dig[j] = (*cc).dig[0]; (*c)->len++;}
+      } else {(*cd).dig[j] = (*cc).dig[0]; (*cd).len++;}
 
     }
-    (*c)->len--;
-    big_clear_zeros(c);
+    (*cd).len--;
+    big_clear_zeros(&cd);
+    big_copy_ref(cd, c);
   }
-  big_init_m(2, &aa1, &cc1);
-  big_end_m(6, &cc2, &cc, &bb, &aa, &aa1, &cc1);
+  (*aa1).alloc_t = true; (*cc1).alloc_t = true; (*cd).alloc_t = true;
+  (*aa1).alloc_d = false; (*cc1).alloc_d = false; (*cd).alloc_d = false;
+  big_end_m(6, &cc, &bb, &aa, &aa1, &cc1, &cd);
 }
 
 //
@@ -581,7 +566,7 @@ void big_mod(cb *a, cb *b, big **c) {
   (*bb).len = (*b).len;
   (*cc).len = (*a).len;
   (*cc1).len = (*a).len;
-  (*g).len = (*a).len;
+  (*g).len = 2;
   big_alloc_m(5, &aa, &bb, &cc, &cc1, &g);
   (*c)->neg = false;
   (*c)->len = 1;
@@ -589,8 +574,6 @@ void big_mod(cb *a, cb *b, big **c) {
   // Create copy of a & b
   big_copy(a, &aa);
   big_copy(b, &bb);
-  (*aa).len = (*a).len;
-  (*bb).len = (*b).len;
 
   big_set("1", &g);
   if (a == NULL || b == NULL) {c = NULL;}
@@ -604,7 +587,7 @@ void big_mod(cb *a, cb *b, big **c) {
     big_sub(aa, cc1, c);
     big_clear_zeros(c);
   }
-  big_end_m(3, &g, &bb, &aa);
+  big_end_m(4, &g, &bb, &aa, &cc);
 }
 
 //

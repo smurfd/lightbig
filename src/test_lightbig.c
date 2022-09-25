@@ -10,7 +10,7 @@ int main() {
   int m_t = add_t + mul_t, s_t = m_t + sub_t, d_t = s_t + div_t;
   int mo_t = d_t + mod_t, nrt = mo_t + hex_t, a_t = add_t;
   char *cc = malloc(MAXSTR);
-  bigint_t *ac, *ad, *a1;
+  big *ac, *ad, *a1;
 
   big_init_m(3, &ac, &ad, &a1);
   big_alloc_max_m(3, &ac, &ad, &a1);
@@ -109,29 +109,31 @@ int main() {
 9601173911907492700592982131530147912079948541749035857752315481732903160988470\
 021", "27", "1", "37", "0xb85c9"};
 
-  big_init_m(3, &ac, &ad, &a1);
+  big_init_m(2, &ac, &ad);
   big_alloc_max_m(2, &ac, &ad);
-  for (int j = 0; j < 500; j++) { // 300mb ram
+  for (int j = 0; j < 500; j++) { // 200ish mb ram
+    big *a2 = NULL;
+    big_init_m(1, &a2);
+    big_alloc_max_m(1, &a2);
     for (int i = 0; i < nrt; i++) {
-      big_alloc_max_m(1, &a1);
-      big_set("0", &a1);
+      big_set("0", &a2);
       big_set(a[i], &ac); big_set(b[i], &ad);
-
       // Addition tests
-      if (i < a_t) {big_add(ac, ad, &a1); big_assert(c[i], &a1);}
+      if (i < a_t) {big_add(ac, ad, &a2); big_assert(c[i], &a2);}
       // Multiplication tests
-      else if (i < m_t) {big_mul(ac, ad, &a1); big_assert(c[i], &a1);}
+      else if (i < m_t) {big_mul(ac, ad, &a2); big_assert(c[i], &a2);}
       // Subtraction tests
-      else if (i < s_t) {big_sub(ac, ad, &a1); big_assert(c[i], &a1);}
+      else if (i < s_t) {big_sub(ac, ad, &a2); big_assert(c[i], &a2);}
       // Division tests
-      else if (i < d_t) {big_div(ac, ad, &a1); big_assert(c[i], &a1);}
+      else if (i < d_t) {big_div(ac, ad, &a2); big_assert(c[i], &a2);}
       // Modulo tests
-      else if (i < mo_t) {big_mod(ac, ad, &a1); big_assert(c[i], &a1);}
+      else if (i < mo_t) {big_mod(ac, ad, &a2); big_assert(c[i], &a2);}
       // Hex tests
       else if (i < nrt) {
-        big_mul(ac, ad, &a1); (*a1).base = HEX; big_assert(c[i], &a1);
+        big_mul(ac, ad, &a2); (*a2).base = HEX; big_assert(c[i], &a2);
       }
     }
+    big_end_m(1, a2);
   }
   big_end_m(2, &ac, &ad);
   printf("OK\n");
