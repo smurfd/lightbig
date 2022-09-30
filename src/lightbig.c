@@ -439,7 +439,7 @@ void big_sub(cb *a, cb *b, big **c) {
       }
     }
   }
-  big_end_m(2, &bb, &aa);
+  //big_end_m(2, &bb, &aa);
 }
 
 //
