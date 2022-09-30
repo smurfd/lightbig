@@ -111,7 +111,7 @@ int main() {
 
   big_init_m(2, &ac, &ad);
   big_alloc_max_m(2, &ac, &ad);
-  for (int j = 0; j < 500; j++) { // 200ish mb ram
+  for (int j = 0; j < 5; j++) {
     big *a2 = NULL;
     big_init_m(1, &a2);
     big_alloc_max_m(1, &a2);
