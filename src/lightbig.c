@@ -92,7 +92,7 @@ void big_set_m(int len, ...) {
 //
 // Set a bigint from string
 void big_set(char *a, big **b) {
-  int len = (int)strlen(a) > (*b)->len ? strlen(a) : (*b)->len, skip = 0;
+  int len = (int)strlen(a) > (*b)->len ? strlen(a) : (u64)(*b)->len, skip = 0;
 
   // Reset outparam
   memset((*b)->dig, 0, len);
@@ -211,7 +211,7 @@ void big_clear_zeros(big **b) {
 //
 // Get string from bigint
 void big_get(cb *a, char *b) {
-  int len = (int)strlen(b) > (*a).len ? strlen(b) : (*a).len, mod = 0;
+  int len = (int)strlen(b) > (*a).len ? strlen(b) : (u64)(*a).len, mod = 0;
 
   // Reset outparam
   memset(b, 0, len);
