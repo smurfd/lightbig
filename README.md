@@ -3,7 +3,7 @@ A light bigint C implementation
 
 ### Build
 ```
-mkdir build && cd build && clang ../src/test_lightbig.c ../src/lightbig.c -o lightbig
+make -Csrc
 ```
 
 ### Usage
@@ -33,8 +33,5 @@ int main() {
   big_end_m(3, &ac, &ad, &a1);
   printf("OK\n");
 }
-```
-```
-clang test_lightbig.c lightbig/src/lightbig.c -o test
 ```
 

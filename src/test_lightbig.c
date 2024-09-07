@@ -5,7 +5,7 @@
 #include <assert.h>
 #include "lightbig.h"
 
-int main() {
+int main(void) {
   int add_t = 5, sub_t = 16, mul_t = 3, div_t = 14, mod_t = 2, hex_t = 1;
   int m_t = add_t + mul_t, s_t = m_t + sub_t, d_t = s_t + div_t;
   int mo_t = d_t + mod_t, nrt = mo_t + hex_t, a_t = add_t;
